@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Snapshot Yo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            width: 600px;
+            display: block;
+            margin: 15px auto 30px;
+        }
+
+        form input[type="text"], form textarea {
+            padding: 10px;
+            min-height: 25px;
+            line-height: 25px;
+            width: 580px;
+            display: block;
+            margin: 10px 0;
+            border: none;
+            border-bottom: 2px solid #333;
+            outline: none;
+            font-family: Arial, sans-serif !important;
+            transition: 0.2s all ease;
+        }
+
+        form textarea {
+            resize: vertical;
+            max-height: 100px;
+        }
+
+        form input[type="text"]:focus, form textarea:focus {
+            background-color: #ececec;
+            border-color: #c6322d;
+        }
+
+        form input[type="submit"] {
+            width: 100%;
+            border: none;
+            outline: none;
+            margin-top: 20px;
+            padding: 5px;
+            height: 40px;
+            line-height: 30px;
+            cursor: pointer;
+            transition: 0.2s all ease;
+        }
+
+        form input[type="submit"]:hover {
+            color: white;
+            background-color: #c6322d;
+        }
+
+        .snapshot img {
+            width: 100%;
+        }
+
+        .snapshot {
+            border-bottom: 3px dashed transparent;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .snapshot:nth-child(odd) {
+            border-bottom-color: #e27644;
+        }
+
+        .snapshot:nth-child(even) {
+            border-bottom-color: #3f7af0;
+        }
+    </style>
+</head>
+
+<body>
+<h1>Envoie tes Snapshots Yo!</h1>
+
+<form action="/" method="post" id="add_snapshot_form">
+    <input type="text" name="url" id="url" placeholder="Coller le lien du site ici" autofocus>
+    <textarea name="description" id="description" placeholder="Ajouter un brève description ..."></textarea>
+    <input type="submit" id="envoi_message" value="Envoyer">
+</form>
+
+<section id="snapshots">
+
+</section>
+
+
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+
+    // Connexion à socket.io
+    var socket = io.connect('http://localhost:8080');
+
+    socket.on('new_snapshot', function(snapshot) {
+        addSnapshot(snapshot);
+    });
+
+    $('#add_snapshot_form').submit(function (e) {
+        // on empeche la soumission du formulaire
+        e.preventDefault();
+
+        // Récupération des données
+        var url  = $('#url');
+        var description = $('#description');
+        var data = {
+            url: url.val(),
+            description: description.val()
+        };
+
+        // Emission de l'évènement pour ajouter un snapshot
+        socket.emit('new_snapshot', data);
+
+        // Reset formulaire
+        url.val('').focus();
+        description.val('');
+    });
+
+    // Ajoute un snapshot dans la page
+    function addSnapshot(snapshot) {
+        $('#snapshots').prepend(
+                '<div class="snapshot">' +
+                    '<p>'+snapshot.url+'</p>' +
+                    '<p>'+snapshot.description+'</p>' +
+                    '<img src="'+snapshot.imgData+'" alt="Snapshot">' +
+                '</div>'
+        );
+    }
+</script>
+</body>
+</html>

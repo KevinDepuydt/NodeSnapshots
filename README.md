@@ -1,6 +1,6 @@
 ##Snapshots
 
-_Simple app using **node.js**, **phantomJs** and **socket.io** to take site snapshot from url_
+Simple app using _node.js_, _phantomJs_ and _socket.io_ to take site snapshot from url
 
 Run `npm install` to install dependencies
 

@@ -9,12 +9,7 @@ app.get('/', function (req, res) {
 });
 
 io.sockets.on('connection', function (socket) {
-    // Dès qu'on nous donne un pseudo, on le stocke en variable de session et on informe les autres personnes
-    socket.on('nouveau_client', function() {
-        socket.broadcast.emit('nouveau_client');
-    });
-
-    // Dès qu'on reçoit un message, on récupère le pseudo de son auteur et on le transmet aux autres personnes
+    // Dès qu'on reçoit un snapshot on récupère les données de l'image en base64 avant de renvoyer les données au client
     socket.on('new_snapshot', function (params) {
         phantom.create().then(function(ph) {
             ph.createPage().then(function(page) {

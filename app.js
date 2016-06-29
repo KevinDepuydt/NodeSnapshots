@@ -13,7 +13,7 @@ io.sockets.on('connection', function (socket) {
     socket.on('new_snapshot', function (params) {
         phantom.create().then(function(ph) {
             ph.createPage().then(function(page) {
-                page.property('viewportSize', {width: 1600, height: 1200}).then(function() {
+                page.property('viewportSize', {width: 1920, height: 1080}).then(function() {
                     page.open(params.url).then(function(status) {
                         page.renderBase64('PNG').then(function(data) {
                             var imgData = 'data:image/png;base64,'+data;

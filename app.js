@@ -11,20 +11,22 @@ app.get('/', function (req, res) {
 io.sockets.on('connection', function (socket) {
     // Dès qu'on reçoit un snapshot on récupère les données de l'image en base64 avant de renvoyer les données au client
     socket.on('new_snapshot', function (params) {
-        phantom.create().then(function(ph) {
-            ph.createPage().then(function(page) {
-                page.property('viewportSize', {width: 1920, height: 1080}).then(function() {
-                    page.open(params.url).then(function(status) {
-                        page.renderBase64('PNG').then(function(data) {
-                            var imgData = 'data:image/png;base64,'+data;
-                            socket.broadcast.emit('new_snapshot', {imgData: imgData, description: params.description, url: params.url});
-                            socket.emit('new_snapshot', {imgData: imgData, description: params.description, url: params.url});
-                            ph.exit();
+        if (params.url.length > 0) {
+            phantom.create().then(function(ph) {
+                ph.createPage().then(function(page) {
+                    page.property('viewportSize', {width: 1920, height: 1080}).then(function() {
+                        page.open(params.url).then(function(status) {
+                            page.renderBase64('PNG').then(function(data) {
+                                var imgData = 'data:image/png;base64,'+data;
+                                socket.broadcast.emit('new_snapshot', {imgData: imgData, description: params.description, url: params.url});
+                                socket.emit('new_snapshot', {imgData: imgData, description: params.description, url: params.url});
+                                ph.exit();
+                            });
                         });
                     });
                 });
             });
-        });
+        }
     });
 });
 
